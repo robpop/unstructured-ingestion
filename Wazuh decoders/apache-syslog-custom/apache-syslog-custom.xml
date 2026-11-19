@@ -1,0 +1,18 @@
+<decoder name="apache-syslog-custom">
+
+  <!-- Identify this as an HTTP access log -->
+  <type>web-log</type>
+
+  <!-- Match the syslog program name: root[1838503] -->
+  <program_name type="pcre2">^root$</program_name>
+
+  <!-- Confirm the message body resembles an Apache access log -->
+  <prematch type="pcre2">^\S+ - - \[</prematch>
+
+  <!-- Extract IP, timestamp, method, URL, HTTP version, status, and bytes -->
+  <regex type="pcre2">^(\S+)\s+-\s+-\s+\[([^\]]+)\]\s+"([A-Z]+)\s+(\S+)\s+(HTTP/\d+(?:\.\d+)?)"\s+(\d{3})\s+(\d+|-)(?:\s|$)</regex>
+
+  <!-- Map the seven capture groups to Wazuh fields -->
+  <order>srcip,apache.access_time,http.method,url,http.version,id,http.bytes</order>
+
+</decoder>
